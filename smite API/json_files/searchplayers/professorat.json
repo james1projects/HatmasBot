@@ -1,0 +1,26 @@
+[
+  {
+    "Name": "ProfessoRat",
+    "hz_player_name": "ProfessoRat",
+    "player_id": "700890856",
+    "portal_id": "1",
+    "privacy_flag": "n",
+    "ret_msg": null
+  },
+  {
+    "Name": "ProfessorAthena",
+    "hz_player_name": "ProfessorAthena",
+    "player_id": "11472106",
+    "portal_id": "5",
+    "privacy_flag": "n",
+    "ret_msg": null
+  },
+  {
+    "Name": "ProfessorAteu",
+    "hz_player_name": null,
+    "player_id": "702211272",
+    "portal_id": "10",
+    "privacy_flag": "n",
+    "ret_msg": null
+  }
+]
