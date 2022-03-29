@@ -1,2 +1,9 @@
 #Config file
 *.ini
+
+#Directories
+"Character Images/"
+__pycashe__/
+files/
+"smite API/"
+"stream sources"
