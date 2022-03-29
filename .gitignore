@@ -2,6 +2,7 @@
 *.ini
 
 #Directories
+.pylint.d
 Character*Images/
 __pycashe__/
 files/
