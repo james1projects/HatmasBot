@@ -1,7 +1,7 @@
 """Twitch Bot Created by Hatmaster.
 
 Has custom features for Character Requests,
-Smite API commands, and more! Use class TwitchBot
+Smite API commands, and more! Use class TwitchBot.
 
 Version 1.1
 """
@@ -9,84 +9,111 @@ Version 1.1
 # Imports
 import Commands
 import HatBotConfig
-import os
-import sys
+import logging
 import socket
 import time
 
-# determine if application is a script file or frozen exe
-if getattr(sys, 'frozen', False):
-    myDir = os.path.dirname(sys.executable)
-elif __file__:
-    myDir = os.path.dirname(__file__)
-
-# Global Variables/Configuration
-feature_snap = True
-
-canSendMessages = True
 
 class TwitchBot(object):
     """Twitch Bot Created by Hatmaster."""
 
     def __init__(self):
         config = HatBotConfig.HatBotConfig()
+        self.can_send_messages = True
         self.connection_data = ("irc.chat.twitch.tv", 6667)
         self.oauth_token = config.loadOption(config.SECTION_CREDENTIALS, config.OPTION_OAUTH_TOKEN)
         self.bot_username = config.loadOption(config.SECTION_CREDENTIALS, config.OPTION_BOT_USERNAME)
         self.channel_name = "#" + config.loadOption(config.SECTION_CREDENTIALS, config.OPTION_CHANNEL_NAME).lower()
-        self.consoleMessages = 0
 
-        self.isLoggedIn = False
-        self.isConnected = False
+        self.is_logged_in = False
+        self.is_connected = False
         self.server = socket.socket()
         self.stop = False
 
         self.debug_all_twitch_info = True
 
-        if (self.isConnected == False):
-            self.connectUntilSuccess()
+        if (self.is_connected is False):
+            self.connect_until_success()
 
-        if (self.isConnected):
+        if (self.is_connected):
             self.server.send(bytes('PASS ' + self.oauth_token + '\r\n', 'utf-8'))
             self.server.send(bytes('NICK ' + self.bot_username + '\r\n', 'utf-8'))
             self.server.send(bytes('CAP REQ :twitch.tv/tags\r\n', 'utf-8'))
             self.server.send(bytes('JOIN ' + self.channel_name + '\r\n', 'utf-8'))
 
-            self.log("Joining " + self.channel_name[1:] + "'s Channel...")
+            self.log("Joining Channel " + self.channel_name[1:] + "..")
         else:
             self.log("Failed to connect, check internet connection or settings.")
 
-    def connectUntilSuccess(self, MAX_ATTEMPTS=20):
-        """Try connecting to twitch until the max attempts have been reached, or
-        the connection is a success"""
+    def connect_until_success(self, max_attempts=20):
+        """Connect to twitch until success or max_attempts is reached.
 
-        connectAttempts = 1
-        while(self.isConnected == False):
-            if (connectAttempts < MAX_ATTEMPTS):
+        Parameters
+        ----------
+        MAX_ATTEMPTS : TYPE, optional
+            DESCRIPTION. The default is 20.
+
+        Returns
+        -------
+        Boolean
+            Whether the bot was able to connect or not.
+
+        """
+        success = False
+        connect_attempts = 1
+        while(self.is_connected is False):
+            if (connect_attempts < max_attempts):
                 try:
                     self.server.connect(self.connection_data)
-                    self.isConnected = True
+                    self.is_connected = True
+                    success = True
                     print("Connected.")
                 except:
                     # Connetion failed.
                     self.log("Connection failed... trying again...")
-                    time.sleep(2**connectAttempts)
-                    connectAttempts += 1
+                    time.sleep(2**connect_attempts)
+                    connect_attempts += 1
+            else:
+                break
+        return success
 
     # Send a message to the connected twitch channel via the twitch bot
-    def sendMessage(self, message):
-        global canSendMessages
+    def send_message(self, message):
+        """Send a message in connected Twitch Chat.
 
-        if (self.isConnected and canSendMessages):
+        Parameters
+        ----------
+        message : String
+            Message to send.
+
+        Returns
+        -------
+        None.
+
+        """
+        if (self.is_connected and self.can_send_messages):
             self.log(self.bot_username + " -> " + message)
             self.server.send(bytes('PRIVMSG ' + self.channel_name +
                                    ' :' + message + '\r\n', 'utf- 8'))
 
     def log(self, text):
+        """Log text.
+
+        Parameters
+        ----------
+        text : String
+            Text to log.
+
+        Returns
+        -------
+        None.
+
+        """
         print(text, end='\n')
 
     def main(self):
-        if (self.isConnected and self.stop == False):
+        """Logic for main method for Twitch Bot."""
+        if (self.is_connected and self.stop is False):
             self.server.settimeout(.05)
             try:
                 rawdata = (self.server.recv(2048))
@@ -96,6 +123,7 @@ class TwitchBot(object):
             try:
                 data_string = rawdata.decode("utf-8")
             except UnicodeDecodeError as e:
+                data_string = ""
                 print("UnicodeDecodeError")
                 print(e)
                 return
@@ -109,17 +137,18 @@ class TwitchBot(object):
             if (rawdata == bytes("PING :tmi.twitch.tv\r\n", 'utf-8')):
                 self.server.send(bytes('PONG :tmi.twitch.tv\r\n', 'utf-8'))
 
-            if (self.isLoggedIn == True):
+            if (self.is_logged_in is True):
                 if (data_string != "" and "PRIVMSG" in data_string):
                     self.parseTags(data_string)
 
             if ("Welcome, GLHF!\r\n:tmi.twitch.tv" in data_string):
-                self.isLoggedIn = True
+                self.is_logged_in = True
                 self.log("Successfully logged into " + self.channel_name[1:] + "'s chat!")
 
     def exitbot(self):
+        """Exit and disconnect the Twitch Bot"""
         self.server.send(bytes('PART ' + self.channel_name + '\r\n', 'utf-8'))
-        self.isConnected = False
+        self.is_connected = False
         self.stop = True
         del self
 
@@ -251,9 +280,16 @@ def validate_token():
 
 
 if __name__ == "__main__":
+    print("Running", __file__, "as main method..")
+    # Remove all handlers associated with the root logger object.
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+
+    # Reconfigure logging again, this time with a file.
+    logging.basicConfig(level=logging.INFO, format='%(filename)s:%(lineno)s %(levelname)s:%(message)s')
     if (validate_token()):
-        oBot = TwitchBot()
+        twitch_bot = TwitchBot()
         while(True):
-            oBot.main()
+            twitch_bot.main()
     else:
         print("invalid oauth token")

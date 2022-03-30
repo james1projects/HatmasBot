@@ -1,4 +1,4 @@
-#IMPORT PACKAGES
+"""Used to keep a character request queue for a Twitch Stream."""
 import HatBotConfig
 import json
 import os
@@ -6,8 +6,9 @@ from PIL import Image
 import shutil
 import sys
 
-#Validate all directories for Character Requests
-def ValidateDirectory():
+# Validate all directories for Character Requests
+def validate_directory():
+    """Validates the files necessary for character requests."""
     valid = True
     print("Validating Directories for Character Requests")
     config = HatBotConfig.HatBotConfig()
@@ -18,9 +19,9 @@ def ValidateDirectory():
 
     dir_files = config.loadOption(config.SECTION_SETTINGS, config.DIR_FILES)
     dir_stream_sources = config.loadOption(config.SECTION_SETTINGS, config.DIR_STREAM_SOURCES)
-    
+
     myDirectories = [dir_files, dir_stream_sources]
-    
+
     #Check for all needed directories and create them if they do not exist.
     for path in myDirectories:
         if (not os.path.isdir(path)):
@@ -30,14 +31,14 @@ def ValidateDirectory():
             except:
                 print("Could not create a new directory for", path)
                 valid = False
-            
+
     path_character_list_json = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.PATH_CHARACTER_LIST_JSON)
     if (not os.path.exists(path_character_list_json)):
         print("character_list.json not found. Creating a new empty one.")
         characterList = []   #Create an empty character list
     else:
         characterList = LoadCharacterList()
-    
+
     imageExtensions = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.CHARACTER_IMAGE_FORMATS).split("/")
     path_character_blank_image = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.PATH_CHARACTER_BLANK_IMAGE_SOURCE)
     for ext in imageExtensions:
@@ -49,7 +50,7 @@ def ValidateDirectory():
         CreateBlankImage()
     UpdateAllFiles(characterList)
     return valid
-    
+
 def CreateBlankImage():
     config = HatBotConfig.HatBotConfig()
     imageExtensions = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.CHARACTER_IMAGE_FORMATS).split("/")
@@ -59,36 +60,36 @@ def CreateBlankImage():
             continue
         path_character_blank_image = path_character_blank_image + "." + ext
         break
-    
+
     img = Image.new("RGBA", (512, 512), (255, 255, 255, 0))
     img.save(path_character_blank_image, ext.upper())
-    
+
 #The initial way to add a new character to the request list
 def RequestCharacter(rawCharacterName):
     rawCharacterName = rawCharacterName.lower()
-    
+
     #Checks if the character is valid or is a nickname
     characterRequestName = LookUpCharacter(rawCharacterName)
-    
+
     characterList = LoadCharacterList()
     characterList.append(characterRequestName)
     UpdateAllFiles(characterList)
     return True
-    
+
 
 #Checks if the character is a valid one.
 def LookUpCharacter(characterRequestName):
     #TODO: Implement finding a character from a nicknames json file
-    
+
     return characterRequestName.title()
-    
+
 #Gets the character list from the json file
 def LoadCharacterList():
     config = HatBotConfig.HatBotConfig()
     path_character_list_json = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.PATH_CHARACTER_LIST_JSON)
     with open(path_character_list_json, "r") as inFile:
         character_list = json.load(inFile)
-        
+
     return character_list
 
 #Saves the character list to its json file
@@ -103,14 +104,14 @@ def UpdateAllFiles(characterList):
     print("Updating all files for character requests...")
     SaveCharacterList(characterList)
     UpdateStreamSources(characterList)
-    
+
 #Updates Stream Sources for OBS
 #Updates character list text
 #Updates character next text & next image
 def UpdateStreamSources(characterList = None):
     if (characterList == None):
         characterList = LoadCharacterList()
-    
+
     #Updates the text file with the character list
     #Also updates the next character
     UpdateStreamSourceCharacterList(characterList)
@@ -128,18 +129,18 @@ def UpdateStreamSourceCharacterList(characterList):
             for count, characterName in enumerate(characterList):
                 characterName = characterName.title()
                 #Formatted as (1 Request) (2 Request) ....
-                outfile.write("(" + str(count + 1) + 
+                outfile.write("(" + str(count + 1) +
                               " " + characterName + ") ")
-                
+
     UpdateStreamSourceCharacterNext(characterList)
-                
-                
+
+
 #Updates the next character Stream Source text file & image
 def UpdateStreamSourceCharacterNext(characterList):
     characterName = None
     config = HatBotConfig.HatBotConfig()
     characterType = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.CHARACTER_TYPE)
-    
+
     path_character_next_txt = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.PATH_CHARACTER_NEXT_TXT)
     nextCharacterBlankText = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.CHARACTER_RESPONSE_NO_NEXT)
     with open(path_character_next_txt, "w") as outfile:
@@ -151,8 +152,8 @@ def UpdateStreamSourceCharacterNext(characterList):
             #TODO: Change to be included in the config file.
             outfile.write("Next " + characterType + " Request:\n" + characterName)
     UpdateStreamSourceCharacterNextImage(characterName)
-     
-    
+
+
 #Updates the Stream Source next character image for obs
 def UpdateStreamSourceCharacterNextImage(characterName):
     config = HatBotConfig.HatBotConfig()
@@ -160,13 +161,13 @@ def UpdateStreamSourceCharacterNextImage(characterName):
     #Check if that image exists
     if (characterName == None):
         #This path does NOT include an extension.
-        path_character_image_source = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.PATH_CHARACTER_BLANK_IMAGE_SOURCE) 
+        path_character_image_source = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.PATH_CHARACTER_BLANK_IMAGE_SOURCE)
     else:
         dir_character_images = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.DIR_CHARACTER_IMAGES)
         path_character_image_source = os.path.join(dir_character_images, characterName)
     if (not os.path.exists(path_character_image_source)):
-        path_character_image_source = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.PATH_CHARACTER_BLANK_IMAGE_SOURCE) 
-        
+        path_character_image_source = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.PATH_CHARACTER_BLANK_IMAGE_SOURCE)
+
     for ext in imageExtensions:
         ext = "." + ext
         if (os.path.exists(path_character_image_source + ext)):
@@ -175,7 +176,7 @@ def UpdateStreamSourceCharacterNextImage(characterName):
     #Try copying the image.
     try:
         if (not os.path.exists(path_character_image_source)):
-            path_character_image_source = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.PATH_CHARACTER_BLANK_IMAGE_SOURCE) 
+            path_character_image_source = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.PATH_CHARACTER_BLANK_IMAGE_SOURCE)
             #just use the first non .gif extension
             for ext in imageExtensions:
                 if (ext.lower() == "gif"):
@@ -213,7 +214,7 @@ def RemovePosition(position):
         characterList.pop(index)
         UpdateAllFiles(characterList)
         result = True
-        
+
     return result
 
 #Replaces a position in the character list with a new character, where the position starts counting at 1
@@ -228,7 +229,7 @@ def ReplacePosition(characterName, position):
         characterList[index] = characterName
         UpdateAllFiles(characterList)
         result = True
-        
+
     return result
 
 #Inserts a character at the position in the character list, where the position starts counting at 1
@@ -244,7 +245,7 @@ def InsertPosition(characterName, position):
         characterList.insert(index, characterName)
         UpdateAllFiles(characterList)
         result = True
-    
+
     return result
 
 #Clears the character list to be empty
@@ -252,9 +253,9 @@ def ClearCharacterList():
     result = True
     characterList = []
     UpdateAllFiles(characterList)
-    
+
     return result
-    
+
 def CharacterListToString():
     config = HatBotConfig.HatBotConfig()
     path_character_list_txt = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.PATH_CHARACTER_LIST_TXT)
@@ -262,11 +263,13 @@ def CharacterListToString():
         myString = infile.readline()
 
     return myString
-    
+
 #Purely for testing purposes
 def main():
-    if (ValidateDirectory()):
+    if (validate_directory()):
         ClearCharacterList()
-#Used for testing purposes, only happens when this file is run by itself.
+
+# Used for testing purposes, only happens when this file is run by itself.
 if __name__ == "__main__":
+    print("Running", __file__, "as main..")
     main()
