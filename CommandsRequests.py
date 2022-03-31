@@ -54,13 +54,13 @@ def commandCharacterRequests(twitchBot, tags_dict, command, params):
                 isRequested = CharacterRequests.RequestCharacter(characterName)
                 #print("requesting " + characterName)
                 if (isRequested):
-                    twitchBot.sendMessage("Added " + characterName + " to the request list.")
+                    twitchBot.send_message("Added " + characterName + " to the request list.")
                 else:
-                    twitchBot.sendMessage("Unable to add " + characterName + " to the request list.")
+                    twitchBot.send_message("Unable to add " + characterName + " to the request list.")
             except Exception as e:
                 print(e)
                 #Not enough paramaters were supplied.
-                twitchBot.sendMessage("Use '" + requestCommand + " " +
+                twitchBot.send_message("Use '" + requestCommand + " " +
                                       characterType + " Name' to add a " +
                                       characterType + " to the request list.")
 
@@ -74,12 +74,12 @@ def commandCharacterRequests(twitchBot, tags_dict, command, params):
                     position = int(params[0])
                     isRemoved = CharacterRequests.RemovePosition(position)
                     if (isRemoved):
-                        twitchBot.sendMessage("Removed position " + str(position) + " from the request list.")
+                        twitchBot.send_message("Removed position " + str(position) + " from the request list.")
 
                 except Exception as e:
                     print(e)
                     #Not enough paramaters were supplied.
-                    twitchBot.sendMessage("Use '" + removeCommand + " " +
+                    twitchBot.send_message("Use '" + removeCommand + " " +
                                       " Position' to Remove a " +
                                       characterType + " from the request list.")
     elif (command == replaceCommand):
@@ -100,11 +100,11 @@ def commandCharacterRequests(twitchBot, tags_dict, command, params):
                 isReplaced = CharacterRequests.ReplacePosition(characterName, position)
                 if (isReplaced):
                     print("Replacing position " + str(position))
-                    twitchBot.sendMessage("Replaced position " + str(position) + " with " + characterName)
+                    twitchBot.send_message("Replaced position " + str(position) + " with " + characterName)
 
             except Exception as e:
                 print(e)
-                twitchBot.sendMessage("Use '" + replaceCommand + " " +
+                twitchBot.send_message("Use '" + replaceCommand + " " +
                                 'position' + characterType + ' Name'
                                 " to Replace a " + characterType + " from the request list.")
     elif (command == insertCommand):
@@ -123,26 +123,26 @@ def commandCharacterRequests(twitchBot, tags_dict, command, params):
 
                 isInserted = CharacterRequests.InsertPosition(characterName, position)
                 if (isInserted):
-                    twitchBot.sendMessage("Inserted " + characterName + " at " +
+                    twitchBot.send_message("Inserted " + characterName + " at " +
                     str(position) + " to the request list.")
             except Exception as e:
                 print(e)
-                twitchBot.sendMessage("Use '" + insertCommand + " {" +
+                twitchBot.send_message("Use '" + insertCommand + " {" +
                                       characterType + " name} {position} to insert a " + characterType + " to the list.")
 
     elif (command == showListCommand):
         if (Commands.checkPermission(twitchBot, chatterPermission, userLevel, tags_dict, command)):
             characterListString = CharacterRequests.CharacterListToString()
-            twitchBot.sendMessage(characterListString)
+            twitchBot.send_message(characterListString)
     elif (command == howToRequestCommand):
         if (Commands.checkPermission(twitchBot, chatterPermission, userLevel, tags_dict, command)):
             myString = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.CHARACTER_RESPONSE_HOW_TO_REQUEST)
-            twitchBot.sendMessage(myString)
+            twitchBot.send_message(myString)
     elif (command == clearCommand):
-        if (Commands.checkPermission(twitchBot, chatterPermission, modLevel, tags_dict, command)):
+        if (Commands.checkPermission(twitchBot, chatterPermission, userLevel, tags_dict, command)):
             isCleared = CharacterRequests.ClearCharacterList()
 
             if (isCleared):
-                twitchBot.sendMessage("Cleared the request list.")
+                twitchBot.send_message("Cleared the request list.")
             else:
-                twitchBot.sendMessage("Failed to clear the request list.")
+                twitchBot.send_message("Failed to clear the request list.")

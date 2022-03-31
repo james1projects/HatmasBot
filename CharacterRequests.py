@@ -165,14 +165,15 @@ def UpdateStreamSourceCharacterNextImage(characterName):
     else:
         dir_character_images = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.DIR_CHARACTER_IMAGES)
         path_character_image_source = os.path.join(dir_character_images, characterName)
-    if (not os.path.exists(path_character_image_source)):
-        path_character_image_source = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.PATH_CHARACTER_BLANK_IMAGE_SOURCE)
-
     for ext in imageExtensions:
         ext = "." + ext
         if (os.path.exists(path_character_image_source + ext)):
             path_character_image_source = path_character_image_source + ext
             break
+
+    if (not os.path.exists(path_character_image_source)):
+        path_character_image_source = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.PATH_CHARACTER_BLANK_IMAGE_SOURCE)
+
     #Try copying the image.
     try:
         if (not os.path.exists(path_character_image_source)):
@@ -198,7 +199,6 @@ def UpdateStreamSourceCharacterNextImage(characterName):
             path_character_next_image = path_character_next_image + ext
         shutil.copy(path_character_image_source, path_character_next_image)
     except Exception as e:
-        print("Error: cannot copy", path_character_image_source, "to\n", path_character_next_image, sep=" ")
         print(e)
 
 
@@ -273,3 +273,4 @@ def main():
 if __name__ == "__main__":
     print("Running", __file__, "as main..")
     main()
+    ClearCharacterList()

@@ -61,7 +61,7 @@ def checkPermission(twitchBot, userPermission, neededPermission, user_dict, comm
         if (neededPermission == 4):
             permissionType = "broadcaster"
 
-        twitchBot.sendMessage("@" + user_dict["display-name"] +
+        twitchBot.send_message("@" + user_dict["display-name"] +
                           ", you must be a " + permissionType + " to use " + commandName +
                           ".")
         hasPermission = False
@@ -100,13 +100,13 @@ def checkCommand(twitchBot, command, tags_dict, params):
                     list_snap = Snap.snap(twitchBot.channel_name[1:])
                     for user in list_snap:
                         # TODO add the duration and other settings to config file
-                        twitchBot.sendMessage("/timeout " + user + " 720 Snapped")
+                        twitchBot.send_message("/timeout " + user + " 720 Snapped")
                         time.sleep(0.3)
 
                     # TODO Change these messages to be based on the config file.
-                    twitchBot.sendMessage("Perfectly Balanced. As all things should be BigGauntlet MonkaSnap (Half of users in chat have been timedout for 12 minutes)")
+                    twitchBot.send_message("Perfectly Balanced. As all things should be BigGauntlet MonkaSnap (Half of users in chat have been timedout for 12 minutes)")
                 else:
-                    twitchBot.sendMessage("@" + tags_dict["display-name"] + ", Only " + twitchBot.channel_name[1:] + " has the Gauntlet.")
+                    twitchBot.send_message("@" + tags_dict["display-name"] + ", Only " + twitchBot.channel_name[1:] + " has the Gauntlet.")
             elif command == "!gamble":
                 # Gamble command
                 if len(params) == 1:
@@ -117,6 +117,6 @@ def checkCommand(twitchBot, command, tags_dict, params):
                         message = "Use !gamble {amount}. Amount can be all, half, quarter, or a number."
                 else:
                     message = "Use !gamble {amount}. Amount can be all, half, quarter, or a number."
-                twitchBot.sendMessage(message)
+                twitchBot.send_message(message)
         except Exception as e:
             print(e)

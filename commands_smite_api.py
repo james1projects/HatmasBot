@@ -2,6 +2,7 @@
 
 import Commands
 import HatBotConfig
+import random
 import SmiteAPIExtended
 
 
@@ -55,6 +56,7 @@ def commands_smite_api(twitch_bot, tags_dict, command, params):
     command_worshippers = config.loadOption(config.SECTION_SMITE_API, config.COMMAND_WORSHIPPERS).lower()
     command_duel_rank = config.loadOption(config.SECTION_SMITE_API, config.COMMAND_DUEL_RANK).lower()
     command_current_skin = config.load_option(config.SECTION_SMITE_API, config.COMMAND_CURRENT_SKIN, "")
+    command_random_god = "!randomgod"
     chatter_permission = Commands.getChatterPermission(twitch_bot, tags_dict)
     print("Smite API Command testing:", command, params)
     if command == command_time_played:
@@ -71,7 +73,7 @@ def commands_smite_api(twitch_bot, tags_dict, command, params):
             else:
                 message = "Use " + command_time_played + " {Player}"
 
-            twitch_bot.sendMessage(message)
+            twitch_bot.send_message(message)
     elif command == command_worshippers:
         # WORSHIPPERS COMMAND
         # !worshippers username god
@@ -113,7 +115,7 @@ def commands_smite_api(twitch_bot, tags_dict, command, params):
             else:
                 message = "Please use " + command_worshippers + " {Player} {God}."
 
-            twitch_bot.sendMessage(message)
+            twitch_bot.send_message(message)
     elif command == command_duel_rank:
         # Duel Rank Command:
         # !duelrank player_name
@@ -130,11 +132,19 @@ def commands_smite_api(twitch_bot, tags_dict, command, params):
             else:
                 message = "Use " + command_duel_rank + " {Player}."
 
-            twitch_bot.sendMessage(message)
+            twitch_bot.send_message(message)
     elif command == command_current_skin:
         # Get the streamers Smite username.
         streamer_smite_username = config.load_option(config.SECTION_SMITE_API, config.SMITE_USERNAME)
         if streamer_smite_username is not None:
             smite_client = SmiteAPIExtended.SmiteAPI()
             message = smite_client.get_readable_current_skin(streamer_smite_username)
-            twitch_bot.sendMessage(message)
+            twitch_bot.send_message(message)
+    elif command == command_random_god:
+        # Get the gods list
+        smite_client = SmiteAPIExtended.SmiteAPI()
+        god_list = smite_client.get_gods()
+        if god_list is not None:
+            random_god_dictionary = random.choice(god_list)
+            message = random_god_dictionary["Name"] + "!"
+            twitch_bot.send_message(message)

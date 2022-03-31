@@ -30,7 +30,7 @@ class TwitchBot(object):
         self.server = socket.socket()
         self.stop = False
 
-        self.debug_all_twitch_info = True
+        self.debug_all_twitch_info = False
 
         if (self.is_connected is False):
             self.connect_until_success()
