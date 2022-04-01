@@ -145,25 +145,45 @@ class TwitchBot(object):
                 self.is_logged_in = True
                 self.log("Successfully logged into " + self.channel_name[1:] + "'s chat!")
 
-    def exitbot(self):
-        """Exit and disconnect the Twitch Bot"""
+    def exit_bot(self):
+        """Exit and disconnect the Twitch Bot."""
         self.server.send(bytes('PART ' + self.channel_name + '\r\n', 'utf-8'))
         self.is_connected = False
         self.stop = True
         del self
 
     def parse_twitch_message(self, twitch_message_data):
-        tagStart = twitch_message_data.find("@")
-        tagEnd = twitch_message_data.find("PRIVMSG")-1
+        """Parse Data from Twitch into a user dictionary.
+
+        When a message is received, tags start at the first '@'. After that,
+        all tags have a name and an equals sign with the value being after the
+        '='. At the very end there is a space with 'PRIVMSG #channel_name'.
+        Using this information we are able to extract all tags and their values
+        into a dictionary, then with the message at the very end.
+        This varies for other events that are not messages but we mostly care
+        about the messages.
+
+        Parameters
+        ----------
+        twitch_message_data : String
+            String of data returned by Twitch.
+
+        Returns
+        -------
+        None.
+
+        """
+        tag_start = twitch_message_data.find("@")
+        tag_end = twitch_message_data.find("PRIVMSG")-1
         # Sometimes twitch_message_data starts with multiple new lines. We avoid that by
         # skipping to the first @
-        twitch_message_data = twitch_message_data[tagStart:]
+        twitch_message_data = twitch_message_data[tag_start:]
 
         chat_message = None
-        tagStart += 1  # Do not include the '@'
+        tag_start += 1  # Do not include the '@'
         # There is a twitch irc tags data being sent, could contain a chat message
         tags_dict = {}
-        tags = twitch_message_data[tagStart:tagEnd]
+        tags = twitch_message_data[tag_start:tag_end]
         tags_list = tags.split(";")
         for tag in tags_list:
             equal_location = tag.find("=")
@@ -195,15 +215,15 @@ class TwitchBot(object):
                 print("\t", twitch_message_data)
 
     def parseTags(self, data_string):
-        tagStart = data_string.find("@")
-        tagEnd = data_string.find("PRIVMSG")
-        if (tagStart != -1 and tagEnd != -1):
+        tag_start = data_string.find("@")
+        tag_end = data_string.find("PRIVMSG")
+        if (tag_start != -1 and tag_end != -1):
             # Sometimes multiple messages are sent in twitch irc. Handle
             # Them by using recursion.
             newline_count = data_string.count("\n")
 
             for i in range(newline_count):
-                twitch_message_data = data_string[tagStart:data_string.find("\n")+1]
+                twitch_message_data = data_string[tag_start:data_string.find("\n")+1]
                 print("twitch_message_data:", twitch_message_data, end="--END\n")
                 self.parse_twitch_message(twitch_message_data)
                 data_string = data_string[data_string.find("\n")+1:]
