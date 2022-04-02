@@ -57,11 +57,11 @@ def commands_smite_api(twitch_bot, tags_dict, command, params):
     command_duel_rank = config.loadOption(config.SECTION_SMITE_API, config.COMMAND_DUEL_RANK).lower()
     command_current_skin = config.load_option(config.SECTION_SMITE_API, config.COMMAND_CURRENT_SKIN, "")
     command_random_god = "!randomgod"
-    chatter_permission = Commands.getChatterPermission(twitch_bot, tags_dict)
+    chatter_permission = Commands.get_chatter_permission(twitch_bot, tags_dict)
     print("Smite API Command testing:", command, params)
     if command == command_time_played:
         # TIME PLAYED COMMAND
-        if Commands.checkPermission(twitch_bot, chatter_permission, user_level, tags_dict, command):
+        if Commands.check_permission(twitch_bot, chatter_permission, user_level, tags_dict, command):
             player_name = ""
             for p in params:
                 player_name += p + " "
@@ -78,7 +78,7 @@ def commands_smite_api(twitch_bot, tags_dict, command, params):
         # WORSHIPPERS COMMAND
         # !worshippers username god
         g = None
-        if Commands.checkPermission(twitch_bot, chatter_permission, user_level, tags_dict, command):
+        if Commands.check_permission(twitch_bot, chatter_permission, user_level, tags_dict, command):
             player_name = ""
             god_name = None
             temp_god_name = ""
@@ -120,7 +120,7 @@ def commands_smite_api(twitch_bot, tags_dict, command, params):
         # Duel Rank Command:
         # !duelrank player_name
 
-        if (Commands.checkPermission(twitch_bot, chatter_permission, user_level, tags_dict, command)):
+        if (Commands.check_permission(twitch_bot, chatter_permission, user_level, tags_dict, command)):
             player_name = ""
             for p in params:
                 player_name += p

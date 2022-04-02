@@ -35,11 +35,11 @@ def commandCharacterRequests(twitchBot, tags_dict, command, params):
     howToRequestCommand = config.loadOption(config.SECTION_CHARACTER_REQUEST_COMMANDS, config.COMMAND_CHARACTER_HOW_TO_REQUEST).lower()
     clearCommand = config.loadOption(config.SECTION_CHARACTER_REQUEST_COMMANDS, config.COMMAND_CHARACTER_CLEAR).lower()
 
-    chatterPermission = Commands.getChatterPermission(twitchBot, tags_dict)
+    chatterPermission = Commands.get_chatter_permission(twitchBot, tags_dict)
     #CHECK IF THE MESSAGE IS A REQUEST COMMAND
     if (command == requestCommand):
         #REQUEST COMMANDS
-        if (Commands.checkPermission(twitchBot, chatterPermission, modLevel, tags_dict, command)):
+        if (Commands.check_permission(twitchBot, chatterPermission, modLevel, tags_dict, command)):
             #The chatter is a mod running this command.
             try:
                 if (len(params) < 1):
@@ -66,7 +66,7 @@ def commandCharacterRequests(twitchBot, tags_dict, command, params):
 
     elif (command == removeCommand):
         #Remove COMMAND
-        if (Commands.checkPermission(twitchBot, chatterPermission, modLevel, tags_dict, command)):
+        if (Commands.check_permission(twitchBot, chatterPermission, modLevel, tags_dict, command)):
                 #The chatter is a mod running this command.
                 try:
                     if (len(params) != 1):
@@ -85,7 +85,7 @@ def commandCharacterRequests(twitchBot, tags_dict, command, params):
     elif (command == replaceCommand):
         #Replace COMMAND
         #Check the user's permission level.
-        if (Commands.checkPermission(twitchBot, chatterPermission, modLevel, tags_dict, command)):
+        if (Commands.check_permission(twitchBot, chatterPermission, modLevel, tags_dict, command)):
             try:
                 if (len(params) < 2):
                     raise Commands.NotEnoughParameters("Replace requires at least 2 parameters: " + str(command) + ' ' + str(params))
@@ -109,7 +109,7 @@ def commandCharacterRequests(twitchBot, tags_dict, command, params):
                                 " to Replace a " + characterType + " from the request list.")
     elif (command == insertCommand):
         #INSERT COMMAND
-        if (Commands.checkPermission(twitchBot, chatterPermission, modLevel, tags_dict, command)):
+        if (Commands.check_permission(twitchBot, chatterPermission, modLevel, tags_dict, command)):
             try:
                 if (len(params) < 2):
                     raise Commands.NotEnoughParameters("Insert requires at least 2 parameters: " + str(command) + ' ' + str(params))
@@ -131,15 +131,15 @@ def commandCharacterRequests(twitchBot, tags_dict, command, params):
                                       characterType + " name} {position} to insert a " + characterType + " to the list.")
 
     elif (command == showListCommand):
-        if (Commands.checkPermission(twitchBot, chatterPermission, userLevel, tags_dict, command)):
+        if (Commands.check_permission(twitchBot, chatterPermission, userLevel, tags_dict, command)):
             characterListString = CharacterRequests.CharacterListToString()
             twitchBot.send_message(characterListString)
     elif (command == howToRequestCommand):
-        if (Commands.checkPermission(twitchBot, chatterPermission, userLevel, tags_dict, command)):
+        if (Commands.check_permission(twitchBot, chatterPermission, userLevel, tags_dict, command)):
             myString = config.loadOption(config.SECTION_CHARACTER_REQUESTS_EXTENDED, config.CHARACTER_RESPONSE_HOW_TO_REQUEST)
             twitchBot.send_message(myString)
     elif (command == clearCommand):
-        if (Commands.checkPermission(twitchBot, chatterPermission, userLevel, tags_dict, command)):
+        if (Commands.check_permission(twitchBot, chatterPermission, userLevel, tags_dict, command)):
             isCleared = CharacterRequests.ClearCharacterList()
 
             if (isCleared):

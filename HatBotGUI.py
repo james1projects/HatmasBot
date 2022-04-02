@@ -414,7 +414,7 @@ class MainWindow(Window):
         if self.twitchBot is not None:
             self.log("Disconnecting Bot from Twitch...\n\n")
             self.twitchBot.stop = True
-            self.twitchBot.exitbot()
+            self.twitchBot.exit_bot()
             self.twitchBot = None
             self.log("Bot has disconnected from Twitch and is no longer running.\n")
 

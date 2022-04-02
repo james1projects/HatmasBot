@@ -209,7 +209,7 @@ class TwitchBot(object):
 
                 self.log_twitch_message(displayname, chat_message, displayname_color=tags_dict["color"], list_emotes=list_emotes)
                 #self.log(tags_dict["display-name"] + ": "+ chatMessage)
-                self.checkCommand(tags_dict)
+                self.check_command(tags_dict)
             else:
                 print("SOMETHING WENT WRONG WITH DISPLAYNAME, CHATMESSAGE (", displayname, ", ", chat_message, ")", sep="")
                 print("\t", twitch_message_data)
@@ -231,6 +231,8 @@ class TwitchBot(object):
 
     def log_twitch_message(self, displayname, message, displayname_color="#FFFFFF", list_emotes=None):
         """
+        Log a twitch message to the console.
+
         Parameters
         ----------
         displayname : String
@@ -247,8 +249,6 @@ class TwitchBot(object):
         None.
 
         """
-
-        default_chat_message_color = "#FFFFFF"
         list_colors_to_log = [displayname_color]
         list_strings_to_log = [displayname, ": " + message]
 
@@ -279,14 +279,14 @@ class TwitchBot(object):
 
         self.log(string_to_log)
 
-    def checkCommand(self, tags_dict):
+    def check_command(self, tags_dict):
         if ("chat_message" in tags_dict):
             #print("mod:", tags_dict['mod'], type(tags_dict['mod']), chatterPermission)
             chatMessage = tags_dict["chat_message"].rstrip("\n\r")
             params = chatMessage.split(" ")  # Split the message based on spaces
             command = params.pop(0).lower()  # Gets rid of the command name in params
 
-            Commands.checkCommand(self, command, tags_dict, params)
+            Commands.check_command(self, command, tags_dict, params)
 
 
 def validate_token():

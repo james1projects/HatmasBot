@@ -1,4 +1,4 @@
-"""Contains all functions necessary for checking commands"""
+"""Contains all functions necessary for checking commands."""
 
 import CommandsRequests
 import commands_smite_api
@@ -11,7 +11,7 @@ class NotEnoughParameters(Exception):
     def __init__(self, msg):
         super().__init__(msg)
 
-def getChatterPermission(twitchBot, tags_dict):
+def get_chatter_permission(twitchBot, tags_dict):
     broadcaster = twitchBot.channel_name[1:].lower()
     chatterPermission = 0
     if (tags_dict["mod"] == '0'):
@@ -25,7 +25,7 @@ def getChatterPermission(twitchBot, tags_dict):
 
     return chatterPermission
 
-def checkPermission(twitchBot, userPermission, neededPermission, user_dict, commandName):
+def check_permission(twitchBot, userPermission, neededPermission, user_dict, commandName):
     """Checks whether the user running the command has permission
 
     :oaran twutchBot: object twitchBot from class TwitchBot
@@ -42,7 +42,7 @@ def checkPermission(twitchBot, userPermission, neededPermission, user_dict, comm
     :rtype: Boolean
     :return: Whether the user has the correct permission or not"""
 
-    userPermission = getChatterPermission(twitchBot, user_dict)
+    userPermission = get_chatter_permission(twitchBot, user_dict)
     #Permissions: 0, 1, 2, 3, 4 - User, Sub, VIP, Mod, Broadcaster
     hasPermission = False
     permissionType = ""
@@ -68,8 +68,10 @@ def checkPermission(twitchBot, userPermission, neededPermission, user_dict, comm
 
     return hasPermission
 
-def checkCommand(twitchBot, command, tags_dict, params):
-    """checks any command being run by the Twitch Bot and does the appropriate action or response
+
+def check_command(twitchBot, command, tags_dict, params):
+    """Check any command a user typed in and does the appropriate action or response.
+
     :param twitchBot: twitchBot object from class TwitchBot
     :type twitchBot: object
     :param command: The command name being sent.
@@ -96,6 +98,7 @@ def checkCommand(twitchBot, command, tags_dict, params):
                 if (tags_dict["display-name"].lower() == twitchBot.channel_name[1:].lower()):
                     #The broadcaster typed !snap, let the snap commense!
 
+                    twitchBot.send_message("InfinitySnap InfinitySnap InfinitySnap InfinitySnap InfinitySnap")
                     #gets a list containing half of chatters, completely random and balanced as all things should be
                     list_snap = Snap.snap(twitchBot.channel_name[1:])
                     for user in list_snap:
@@ -104,7 +107,7 @@ def checkCommand(twitchBot, command, tags_dict, params):
                         time.sleep(0.3)
 
                     # TODO Change these messages to be based on the config file.
-                    twitchBot.send_message("Perfectly Balanced. As all things should be BigGauntlet MonkaSnap (Half of users in chat have been timedout for 12 minutes)")
+                    twitchBot.send_message("Perfectly Balanced. As all things should be InfinitySnap BigGauntlet MonkaSnap (Half of chat has been timedout for 12 minutes!)")
                 else:
                     twitchBot.send_message("@" + tags_dict["display-name"] + ", Only " + twitchBot.channel_name[1:] + " has the Gauntlet.")
             elif command == "!gamble":
