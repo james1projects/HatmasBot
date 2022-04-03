@@ -677,7 +677,18 @@ class TwitchSettingsPanel(Panel):
         self.is_entry_changed = False
 
     def save_settings(self, exit_settings=True):
-        """Save Twitch Settings."""
+        """Save Twitch Panel Settings.
+
+        Parameters
+        ----------
+        exit_settings : TYPE, optional
+            Whether to close out of the settings or not. The default is True.
+
+        Returns
+        -------
+        None.
+
+        """
         # print("Save settings")
         config = HatBotConfig.HatBotConfig()
         # pylint: disable=line-too-long
