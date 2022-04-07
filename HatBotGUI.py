@@ -12,10 +12,6 @@ import sys
 import webbrowser
 import requests
 import SmiteAPIExtended
-# from tkinter.tix import *
-# changed it to only import necessary parts of tkinter.tix to avoid wildcard
-# from tkinter.tix import VERTICAL, tkinter, Text, WORD, IntVar, Grid, Toplevel
-# from tkinter.tix import Frame, StringVar, Listbox, END
 import tkinter
 from tkinter import messagebox, PhotoImage
 from tkinter import IntVar, Grid, Toplevel
